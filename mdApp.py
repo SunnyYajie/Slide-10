@@ -15,40 +15,120 @@ from kivy.core.window import Window
 from kivymd.uix.button import MDRaisedButton,MDFillRoundFlatButton
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.metrics import dp
-from kivy.properties import StringProperty,NumericProperty,ObjectProperty
+from kivy.properties import StringProperty, NumericProperty, ObjectProperty
 from kivy.resources import resource_add_path, resource_find
 from kivymd.uix.dialog import MDDialog
 import sqlite3
 from kivy.storage.jsonstore import JsonStore
-from kivymd.uix.card import MDCard
 from kivymd.uix.snackbar import Snackbar
-from kivy.metrics import dp
 from kivy.core.window import Window
-from kivy import properties as pp
 from kivymd.uix.snackbar import BaseSnackbar
-from kivymd.uix.card import MDCard
-
-
+from kivymd.uix.card import MDCard 
+import io
+from kivy.core.image import Image as CoreImage
+from kivymd.uix.list import ThreeLineListItem
+from datetime import timedelta
 
 
 class CustomSnackbar(BaseSnackbar):
-    text = pp.StringProperty(None)
-    icon = pp.StringProperty(None)
-    font_size = pp.NumericProperty("15sp")
+    text        = StringProperty(None)
+    icon        = StringProperty(None)
+    font_size   = NumericProperty("15sp")
 
-class Yugioh(MDCard):
-    id = pp.StringProperty(None)
-    title = pp.StringProperty(None)
-    source = pp.StringProperty(None)
-    group = pp.StringProperty(None)
-    
+class CustomCard(MDCard):
+    id      = StringProperty(None)
+    title   = StringProperty(None)
+    source  = StringProperty(None)
+    group   = StringProperty(None)
     def assign_texture_from_database(self, dbTexture):
-        self.ids.display_texture.texture = dbTexture
+        self.ids.display_image.texture = dbTexture
+        
 
 #Builder.load_file('./mdAppComponents.kv')    
 class MainLayout(BoxLayout):
+    def datetime_difference(self, from_date):
+        decimal_index = from_date.find('.')
+        if decimal_index != -1:
+            from_date = from_date[:decimal_index]
+        now = datetime.datetime.now()
+        try:
+            record_date = datetime.datetime.strptime(from_date, "%Y-%m-%d %H:%M:%S")
+        except:
+            print(f"error from date {from_date}")
+            
+        record_date = datetime.datetime.strptime(from_date, "%Y-%m-%d %H:%M:%S")
+        
+        diff = now - record_date
+        if diff < timedelta(minutes = 60):
+            return f"{int(diff.seconds / 60)}m"
+        elif diff < timedelta(days = 1):
+            return f"{int(diff.seconds / 36000)}h"
+        elif diff < timedelta(days = 30):
+            return f"{diff.days}d"
+        else:
+            return f"{int(diff.days / 30)}mo"
+        
+        
+    
+    def load_posts(self):
+        self.dbconn = sqlite3.connect('C:/Users/Student/Desktop/Kivy Dev/kivy-venv/Codes/Slide 10/kivysql2.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        dbcursor = self.dbconn.cursor()
+        dbcursor.execute("SELECT * FROM trnpost  ORDER BY trnpost.created_at DESC")
+        records = dbcursor.fetchall()
+        if not records:
+            print("no records")
+        else:
+            self.ids.screen4_boxlayout.clear_widgets()
+            for post in records:
+                self.ids.screen4_boxlayout.add_widget(ThreeLineListItem(text=f'[size=18sp][b]{post[2]}[/b][/size]',
+                                                                        secondary_text=f'[size=12sp]posted by: {post[5]} {self.datetime_difference(post[7])}[/size]',
+                                                                        tertiary_text=post[3]))
+            
+
+        
+    """def check_user(self, input_rarity):
+        self.dbconn = sqlite3.connect('C:/Users/Student/Desktop/Kivy Dev/kivy-venv/Codes/Slide 10/kivysql2.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        dbcursor = self.dbconn.cursor()
+        dbcursor.execute(
+            "SELECT * FROM mstimages WHERE mstimages.rarity = :var_rarity",
+            {
+                'var_rarity' : input_rarity
+            })
+        if input_rarity == 5:
+            self.ids."""
     def load_cards(self):
-        var_name = Yugioh(id="", title="",source="",group="")
+        
+        """self.ids.screen1_grid.clear_widgets()
+        mdCard = CustomCard(id="1", title="Test", source=f"", group="group")
+        self.ids.screen1_grid.add_widget(mdCard)
+        mdCard2 = CustomCard(id="2", title="Test2", source=f"", group="group2")
+        self.ids.screen1_grid.add_widget(mdCard2)"""
+        self.dbconn = sqlite3.connect('C:/Users/Student/Desktop/Kivy Dev/kivy-venv/Codes/Slide 10/kivysql2.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        dbcursor = self.dbconn.cursor()
+        dbcursor.execute("SELECT * FROM mstimages ORDER BY mstimages.code")
+        records = dbcursor.fetchall()
+        if not records:
+            print("No Records Detected")
+            return False
+        else:
+            self.ids.screen1_grid.clear_widgets()
+            for img_rec in records:
+                mdCard = CustomCard(id = str(img_rec[0]), 
+                                    title = img_rec[1], 
+                                    source= f"", 
+                                    group= img_rec[2])
+                if img_rec[4] == 5:
+                    mdCard.md_bg_color = "DCA454"
+                else:
+                    mdCard.md_bg_color = "9174A9"
+                
+                data = io.BytesIO(img_rec[3])
+                dbImage = CoreImage(data, ext="webp").texture
+                mdCard.assign_texture_from_database(dbImage)
+                self.ids.screen1_grid.add_widget(mdCard)
+        self.dbconn.commit()
+        self.dbconn.close()
+                
     
     def open_icon_snackbar(self):
         snackbar = CustomSnackbar(
@@ -76,6 +156,8 @@ class MainLayout(BoxLayout):
                 self.screen_manager.current = 'dashboard_screen'
         except KeyError:
             self.screen_manager.current = 'login_screen'
+        
+        self.load_cards()
         
         
     screen_manager = ObjectProperty(None)

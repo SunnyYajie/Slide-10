@@ -1,4 +1,4 @@
-<Yugioh>
+<CustomCard>
     id: root.id
     size_hint: None, None
     size: "280dp", "350dp"
@@ -6,7 +6,7 @@
     pos_hint: {'center_x': 0.5}
     radius: "4dp"
     style: "elevated"
-    md_bg_color: "lightgray"
+    md_bg_color: root.md_bg_color
     MDBoxLayout:
         orientation: 'vertical'
         Image:
@@ -409,6 +409,7 @@
                     MDBottomNavigationItem:
                         name: 'screen 1'
                         icon: 'home-outline'
+                        on_tab_press: root.load_cards()
                         #badge_icon: "numeric-10"
                         
                         ScrollView:
@@ -416,7 +417,7 @@
                             do_scroll_x: False
 
                             MDGridLayout:
-                                id: scrn1_grid
+                                id: screen1_grid
                                 cols: 2
                                 adaptive_height: True
                                 padding: '15dp'
@@ -425,7 +426,7 @@
                                 height: self.minimum_height
                                 width: self.minimum_width
 
-                                
+
                                 
                     MDBottomNavigationItem:
                         name: 'screen 2'
@@ -751,6 +752,7 @@
                     MDBottomNavigationItem:
                         name: 'screen 4'
                         icon: 'message-processing-outline'
+                        on_tab_press: root.load_posts()
                         #badge_icon: "numeric-10"
                         
                         ScrollView:
@@ -758,105 +760,13 @@
                             do_scroll_x: False
 
                             MDBoxLayout:
+                                id: screen4_boxlayout
                                 orientation: 'vertical'
                                 adaptive_height: True
-                                padding: '15dp'
-                                spacing: '10dp'
-                                MDLabel:
-                                    text: 'Playlist'
-                                    halign: 'left'
-                                    font_size: '25sp'
-                                    theme_text_color: "Custom"
-                                    text_color: app.theme_cls.primary_color
-                                TwoLineAvatarIconListItem:
-                                    text: "Spaced out"
-                                    secondary_text: "Bingbong"
-                                                                            
-                                    ImageLeftWidget:
-                                        source: "https://picsum.photos/id/46/280/350"
-
-                                    IconRightWidget:
-                                        icon: "menu"
-
-                                TwoLineAvatarIconListItem:
-                                    text: "Dream Catcher"
-                                    secondary_text: "Dyaa Eldin"
-                                                                            
-                                    ImageLeftWidget:
-                                        source: "https://picsum.photos/id/104/280/350"
-
-                                    IconRightWidget:
-                                        icon: "menu"
-
-                                TwoLineAvatarIconListItem:
-                                    text: "Rizz"
-                                    secondary_text: "Gabe Rodriguez"
-                                                                            
-                                    ImageLeftWidget:
-                                        source: "https://picsum.photos/id/111/280/350"
-
-                                    IconRightWidget:
-                                        icon: "menu"
+                                padding: 20
+                                spacing: 20
                                 
-                                TwoLineAvatarIconListItem:
-                                    text: "Noise"
-                                    secondary_text: "Daniel Ebersole"
-                                                                            
-                                    ImageLeftWidget:
-                                        source: "https://picsum.photos/id/117/280/350"
-
-                                    IconRightWidget:
-                                        icon: "menu"
-
-                                TwoLineAvatarIconListItem:
-                                    text: "Cruise"
-                                    secondary_text: "Anton Sulsky"
-                                                                            
-                                    ImageLeftWidget:
-                                        source: "https://picsum.photos/id/124/280/350"
-
-                                    IconRightWidget:
-                                        icon: "menu"
                                 
-                                TwoLineAvatarIconListItem:
-                                    text: "Day Dream"
-                                    secondary_text: "Charlie Foster"
-                                                                            
-                                    ImageLeftWidget:
-                                        source: "https://picsum.photos/id/129/280/350"
-
-                                    IconRightWidget:
-                                        icon: "menu"
-
-                                TwoLineAvatarIconListItem:
-                                    text: "Twizz"
-                                    secondary_text: "Dietmar Becker"
-                                                                            
-                                    ImageLeftWidget:
-                                        source: "https://picsum.photos/id/133/280/350"
-
-                                    IconRightWidget:
-                                        icon: "menu"
-
-                                TwoLineAvatarIconListItem:
-                                    text: "Chained"
-                                    secondary_text: "Florian Klauer"
-                                                                            
-                                    ImageLeftWidget:
-                                        source: "https://picsum.photos/id/146/280/350"
-
-                                    IconRightWidget:
-                                        icon: "menu"
-
-                                TwoLineAvatarIconListItem:
-                                    text: "Track"
-                                    secondary_text: "Christopher Sardegna"
-                                                                            
-                                    ImageLeftWidget:
-                                        source: "https://picsum.photos/id/155/280/350"
-
-                                    IconRightWidget:
-                                        icon: "menu"
 
 
                     MDBottomNavigationItem:
